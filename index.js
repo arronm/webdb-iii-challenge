@@ -4,12 +4,13 @@ const cors = require('cors');
 
 const PORT = 4444 || process.env.PORT;
 
-const db = require('./data/models')('students');
+// const db = require('./data/models')('students');
+const db = require('./data/students-models');
 
 const middleware = [
   helmet(),
   cors(),
-  express(),
+  express.json(),
 ];
 
 const server = express();
@@ -19,9 +20,42 @@ server.get('/', async (req, res) => {
   res.json({ message: 'API is working' });
 });
 
-server.get('/api/', async (req, res) => {
+server.get('/api', async (req, res) => {
   const data = await db.get();
   res.json(data);
-})
+});
+
+server.get('/api/:id', async (req, res) => {
+  const data = await db.get(req.params.id);
+  res.json(data);
+});
+
+server.post('/api/test', async (req, res) => {
+  try {
+    const post = await db.add(req.body);
+    res.status(201).json(post);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json(error);
+  }
+});
+
+server.put('/api/test/:id', async (req, res) => {
+  try {
+    const put = await db.update(req.params.id, req.body);
+    res.json(put);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+server.delete('/api/test/:id', async (req, res) => {
+  try {
+    const record = await db.remove(req.params.id);
+    res.json(record);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
