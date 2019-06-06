@@ -1,3 +1,4 @@
+// TODO: Fine tune the implementation pattern here
 const db = require('./models.js')('cohorts');
 
 const getStudents = async (cohort_id) => {

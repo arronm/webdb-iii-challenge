@@ -6,11 +6,9 @@ const db = knex(knexConfig.development);
 module.exports = table => ({
   add: add(table),
   get: get(table),
-  // getStudents: getStudents(table),
   update: update(table),
   remove: remove(table),
-  cb: cb(table),
-  // ...methods,
+  cb,
 });
 
 const get = table => id => {
@@ -18,11 +16,8 @@ const get = table => id => {
   return db(table).where({ id }).first();
 }
 
-// const getStudents = table => cohort_id => {
-//   return db(table).where({ cohort_id });
-// }
 
-const cb = table => (method) => {
+const cb = (method) => {
   return method(db);
 }
 
