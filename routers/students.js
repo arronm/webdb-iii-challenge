@@ -2,6 +2,7 @@ const express = require('express');
 
 const db = require('../data/students-models');
 const validateBody = require('../middleware/validateBody');
+const validateNew = require('../middleware/validateNew');
 const validateId = require('../middleware/validateId');
 const errorRef = require('../helpers/errorRef');
 
@@ -20,7 +21,6 @@ router.get('/', validateId(db), async (req, res) => {
 
 router.get('/:id', validateId(db), async (req, res) => {
   try {
-    // res.json(req.resource);
     const student = await db.getStudent(req.resource.id);
     res.json(student);
   } catch (error) {
@@ -29,7 +29,21 @@ router.get('/:id', validateId(db), async (req, res) => {
 });
 
 // POST
-router.post('/', validateBody(['name', 'cohort_id']), async (req, res) => {
+router.post('/', validateNew({
+  name: {
+    type: 'string',
+    required: true,
+  },
+  cohort_id: {
+    type: 'number',
+    required: true,
+    exists: {
+      database: require('../data/models'),
+      table: 'cohorts',
+      column: 'id',
+    }
+  }
+}), async (req, res) => {
   try {
     const student = await db.add(req.body);
     res.json(student);
